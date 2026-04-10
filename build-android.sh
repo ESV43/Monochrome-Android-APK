@@ -45,10 +45,7 @@ LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse upstream/main)
 
 if [ "$LOCAL" = "$REMOTE" ]; then
-    echo "  Already up to date."
-    read -p "  Build anyway? (y/N) " -n 1 -r
-    echo
-    [[ ! $REPLY =~ ^[Yy]$ ]] && exit 0
+    echo "  Already up to date. Building anyway."
 else
     echo "  $(git rev-list --count HEAD..upstream/main) new commits."
     git pull upstream main

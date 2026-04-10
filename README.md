@@ -1,6 +1,4 @@
-# Fabiodalez Music — Android App
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/fabiodalez)
+# Monochrome Android App
 
 Android wrapper for [Monochrome](https://github.com/monochrome-music/monochrome), a privacy-respecting music streaming application.
 
@@ -9,22 +7,23 @@ Android wrapper for [Monochrome](https://github.com/monochrome-music/monochrome)
 - **Background playback** — Foreground Service keeps audio playing when the screen is off
 - **Media controls** — Play/pause/skip in the notification shade, lock screen, and Bluetooth
 - **Battery optimization bypass** — Requests exclusion from Android's battery killer on first launch
-- **Downloads** — Saves tracks to `Downloads/FabiodalezMusic/` with Android notification
+- **Downloads** — Saves tracks to `Downloads/MonochromeMusic/` with Android notification
 - **Local files** — Select Music Folder works on Android (native folder picker)
-- **OAuth** — Last.fm/Libre.fm authentication via Chrome Custom Tab
+- **OAuth Support** — Deep linking support for secure logins
 - **Clipboard** — Copy to clipboard works natively
 - **Bluetooth auto-pause** — Music pauses automatically when Bluetooth disconnects
 - **Full UI** — Navigation bar visible, status bar visible with safe area padding
 - **Back navigation** — Back button in header for album/artist/playlist navigation
-- **Branding** — "Fabiodalez Music" name, custom splash screen
+- **Automation** — Built-in GitHub Actions for automatic APK generation
 
-## Requirements
+## Quick Start (Automatic)
 
-- macOS (with Homebrew)
-- JDK 21 (`brew install openjdk@21`)
-- Android command-line tools (`brew install --cask android-commandlinetools`)
+The easiest way to get the APK is via GitHub Actions:
+1. Fork this repository.
+2. Go to the **Actions** tab in your fork.
+3. Download the latest `Monochrome-debug-apk` artifact.
 
-## Quick Start
+## Quick Start (Manual Build)
 
 ```bash
 # 1. Clone Monochrome
@@ -34,7 +33,7 @@ git remote rename origin upstream
 
 # 2. Clone this overlay
 cd ..
-git clone https://github.com/fabiodalez-dev/Monochrome-Android-APK
+git clone https://github.com/esv43/Monochrome-Android-APK
 
 # 3. Install overlay into Monochrome
 cd Monochrome-Android-APK

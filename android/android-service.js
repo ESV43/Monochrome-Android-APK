@@ -275,7 +275,7 @@ if (window.AndroidLocalFiles) {
             padding-bottom: 0 !important;
             background: #000 !important;
         }
-        .main-header { gap: 4px !important; padding: 6px 8px !important; flex-wrap: nowrap !important; overflow: hidden !important; max-width: 100vw !important; box-sizing: border-box !important; }
+        .main-header { gap: 4px !important; padding: 6px 8px !important; flex-wrap: nowrap !important; max-width: 100vw !important; box-sizing: border-box !important; }
         .main-header .search-bar { min-width: 0 !important; flex: 1 1 0% !important; width: 0 !important; }
         .main-header .header-account-control { margin-right: 2px !important; flex-shrink: 0 !important; }
         .main-header .hamburger-menu { flex-shrink: 0 !important; }
