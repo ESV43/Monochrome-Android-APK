@@ -68,9 +68,11 @@ jobs:
       - name: Fix Java Source Files
         run: |
           cd upstream
-          # Remove backticks from @PluginMethod and other annotations
+          # Remove backticks from all Java annotations (before, after, and around @)
           find android -name "*.java" -type f -exec sed -i 's/`@/@/g' {} +
-          find android -name "*.java" -type f -exec sed -i "s/@\`/@/g" {} +
+          find android -name "*.java" -type f -exec sed -i 's/@`/@/g' {} +
+          # Remove any trailing backticks after annotation names
+          find android -name "*.java" -type f -exec sed -i 's/\([a-zA-Z]\)`/\1/g' {} +
 
       - name: Build Web App & Android APK
         run: |
