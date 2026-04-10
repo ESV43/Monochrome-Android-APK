@@ -38,19 +38,16 @@ jobs:
           git clone https://github.com/monochrome-music/monochrome.git upstream
           cd upstream
           git remote rename origin upstream
-
       - name: Install Overlay and Patch Dependencies
         run: |
           # 1. Install overlay files
           chmod +x overlay/install.sh
           ./overlay/install.sh ./upstream
-
           cd upstream
           # 2. Fix broken upstream dependencies (sourcemap-codec issue)
           npm pkg set overrides.sourcemap-codec=1.4.8
           # 3. Remove miniflare (causes build-from-source sharp errors)
           npm uninstall miniflare --save-dev || true
-
           # 4. Update build script for CI environment
           # Remove Mac paths and use CI environment variables
           sed -i 's|export JAVA_HOME=.*||g' build-android.sh
@@ -62,7 +59,6 @@ jobs:
           sed -i 's|\[\[ ! \$REPLY =~ \^\[Yy\]\$ \]\] && exit 0||g' build-android.sh
           # Fix Linux sed syntax (remove empty string after -i)
           sed -i "s/sed -i ''/sed -i/g" build-android.sh
-
       - name: Build Web App & Android APK
         run: |
           cd upstream
@@ -73,7 +69,6 @@ jobs:
           # Run the build script (now patched for CI)
           chmod +x build-android.sh
           ./build-android.sh
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
