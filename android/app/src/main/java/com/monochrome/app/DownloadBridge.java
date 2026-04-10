@@ -38,7 +38,7 @@ public class DownloadBridge {
                 values.put(MediaStore.Downloads.MIME_TYPE,
                         mimeType != null ? mimeType : "application/octet-stream");
                 values.put(MediaStore.Downloads.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOWNLOADS + "/FabiodalezMusic");
+                        Environment.DIRECTORY_DOWNLOADS + "/MonochromeMusic");
                 Uri uri = context.getContentResolver().insert(
                         MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
                 if (uri != null) {
@@ -51,7 +51,7 @@ public class DownloadBridge {
             } else {
                 java.io.File dir = new java.io.File(
                         Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS), "FabiodalezMusic");
+                                Environment.DIRECTORY_DOWNLOADS), "MonochromeMusic");
                 dir.mkdirs();
                 java.io.FileOutputStream fos = new java.io.FileOutputStream(
                         new java.io.File(dir, filename));
@@ -71,7 +71,7 @@ public class DownloadBridge {
     }
 
     private void showNotification(String filename, boolean success) {
-        String channelId = "fabiodalez_downloads";
+        String channelId = "monochrome_downloads";
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -84,7 +84,7 @@ public class DownloadBridge {
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(success ? "Download complete" : "Download failed")
                 .setContentText(success
-                        ? filename + " → Downloads/FabiodalezMusic"
+                        ? filename + " → Downloads/MonochromeMusic"
                         : "Failed to save " + filename)
                 .setAutoCancel(true);
 

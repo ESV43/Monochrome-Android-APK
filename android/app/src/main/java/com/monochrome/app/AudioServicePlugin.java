@@ -55,7 +55,7 @@ public class AudioServicePlugin extends Plugin {
 
     @PluginMethod
     public void start(PluginCall call) {
-        String title = call.getString("title", "Monochrome");
+        String title = call.getString("title", "Monochrome Music");
         String text = call.getString("text", "Playing music");
         String cover = call.getString("cover", null);
         Boolean playing = call.getBoolean("playing", true);
@@ -144,7 +144,7 @@ public class AudioServicePlugin extends Plugin {
                 values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
                 values.put(MediaStore.Downloads.MIME_TYPE, mimeType);
                 values.put(MediaStore.Downloads.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOWNLOADS + "/FabiodalezMusic");
+                        Environment.DIRECTORY_DOWNLOADS + "/MonochromeMusic");
                 Uri uri = getContext().getContentResolver().insert(
                         MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
                 if (uri != null) {
@@ -157,7 +157,7 @@ public class AudioServicePlugin extends Plugin {
             } else {
                 java.io.File dir = new java.io.File(
                         Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS), "FabiodalezMusic");
+                                Environment.DIRECTORY_DOWNLOADS), "MonochromeMusic");
                 dir.mkdirs();
                 java.io.FileOutputStream fos = new java.io.FileOutputStream(
                         new java.io.File(dir, filename));
@@ -176,7 +176,7 @@ public class AudioServicePlugin extends Plugin {
     private int downloadNotifId = 100;
 
     private void showDownloadNotification(String filename, boolean success) {
-        String channelId = "fabiodalez_downloads";
+        String channelId = "monochrome_downloads";
         NotificationManager nm = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -188,7 +188,7 @@ public class AudioServicePlugin extends Plugin {
 
         String title = success ? "Download complete" : "Download failed";
         String text = success
-                ? filename + " saved to Downloads/FabiodalezMusic"
+                ? filename + " saved to Downloads/MonochromeMusic"
                 : "Failed to save " + filename;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), channelId)

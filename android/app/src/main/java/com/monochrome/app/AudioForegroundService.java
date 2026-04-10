@@ -39,7 +39,7 @@ public class AudioForegroundService extends Service {
 
     private MediaSessionCompat mediaSession;
     private BroadcastReceiver noisyReceiver;
-    private String currentTitle = "Fabiodalez Music";
+    private String currentTitle = "Monochrome Music";
     private String currentArtist = "Music";
     private Bitmap currentCover = null;
     private boolean isPlaying = true;
