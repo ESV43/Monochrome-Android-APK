@@ -65,6 +65,13 @@ jobs:
           # Fix Linux sed syntax (remove empty string after -i)
           sed -i "s/sed -i ''/sed -i/g" build-android.sh
 
+      - name: Fix Java Source Files
+        run: |
+          cd upstream
+          # Remove backticks from @PluginMethod and other annotations
+          find android -name "*.java" -type f -exec sed -i 's/`@/@/g' {} +
+          find android -name "*.java" -type f -exec sed -i "s/@\`/@/g" {} +
+
       - name: Build Web App & Android APK
         run: |
           cd upstream
