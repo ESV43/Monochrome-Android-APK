@@ -53,7 +53,7 @@ public class AudioServicePlugin extends Plugin {
         }
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void start(PluginCall call) {
         String title = call.getString("title", "Monochrome");
         String text = call.getString("text", "Playing music");
@@ -79,7 +79,7 @@ public class AudioServicePlugin extends Plugin {
         call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void stop(PluginCall call) {
         // Don't stop the service — just update state to paused
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
@@ -92,7 +92,7 @@ public class AudioServicePlugin extends Plugin {
         call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void isBatteryOptimized(PluginCall call) {
         JSObject result = new JSObject();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -105,7 +105,7 @@ public class AudioServicePlugin extends Plugin {
         call.resolve(result);
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void requestBatteryExclusion(PluginCall call) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
@@ -119,7 +119,7 @@ public class AudioServicePlugin extends Plugin {
         call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void saveFile(PluginCall call) {
         String dataUri = call.getString("data", null);
         String filename = call.getString("filename", "download");
