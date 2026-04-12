@@ -3,6 +3,7 @@ use std::sync::Arc;
 use parking_lot::Mutex;
 use crate::decoder::Decoder;
 use crate::dsp::DspPipeline;
+use anyhow::Result;
 
 pub struct Player {
     #[allow(dead_code)]
@@ -23,7 +24,7 @@ struct PlayerState {
 }
 
 impl Player {
-    pub fn new() -> Result<Self, anyhow::Error> {
+    pub fn new() -> Result<Self> {
         let host = cpal::default_host();
         let device = host
             .default_output_device()
@@ -48,7 +49,7 @@ impl Player {
         })
     }
 
-    pub fn load(&self, url: &str) -> Result<(), anyhow::Error> {
+    pub fn load(&self, url: &str) -> Result<()> {
         let mut state = self.state.lock();
         let decoder = Decoder::new(url, self.config.sample_rate().0, self.config.channels() as usize)?;
         state.decoder = Some(decoder);
@@ -123,13 +124,15 @@ impl Player {
     fn start_stream(&self) -> Option<cpal::Stream> {
         let state_clone = self.state.clone();
         let channels = self.config.channels() as usize;
+        let sample_rate = self.config.sample_rate().0;
+        let stream_config: cpal::StreamConfig = self.config.clone().into();
 
         let err_callback = |err| log::error!("An error occurred on the audio stream: {}", err);
 
         let stream = match self.config.sample_format() {
             cpal::SampleFormat::F32 => self.device.build_output_stream(
-                &self.config.clone().into(),
-                move |data: &mut [f32], _| self.write_audio_raw(data, &state_clone, channels),
+                &stream_config,
+                move |data: &mut [f32], _| Self::write_audio_static(data, &state_clone, channels, sample_rate),
                 err_callback,
                 None,
             ),
@@ -155,17 +158,29 @@ impl Player {
         }
     }
 
-    fn write_audio_raw(&self, data: &mut [f32], state_arc: &Arc<Mutex<PlayerState>>, channels: usize) {
-        let mut state = state_arc.lock();
+    fn write_audio_static(data: &mut [f32], state_arc: &Arc<Mutex<PlayerState>>, channels: usize, sample_rate: u32) {
+        let mut state_lock = state_arc.lock();
+        let state = &mut *state_lock;
+        
         if !state.playing {
             data.fill(0.0);
             return;
         }
 
-        if let Some(ref mut decoder) = state.decoder {
+        // Split the borrow of state to access fields independently
+        let PlayerState {
+            ref mut decoder,
+            ref mut dsp,
+            volume,
+            ref mut position_ms,
+            ref mut playing,
+            ..
+        } = *state;
+
+        if let Some(ref mut d) = decoder {
             let mut samples_read = 0;
             while samples_read < data.len() {
-                match decoder.next_samples(&mut data[samples_read..]) {
+                match d.next_samples(&mut data[samples_read..]) {
                     Ok(n) if n > 0 => {
                         samples_read += n;
                     }
@@ -174,25 +189,24 @@ impl Player {
             }
 
             // Apply DSP
-            state.dsp.process(&mut data[..samples_read]);
+            dsp.process(&mut data[..samples_read]);
 
             // Apply Volume
-            let vol = state.volume;
             for sample in &mut data[..samples_read] {
-                *sample *= vol;
+                *sample *= volume;
             }
 
             // Update position (approximate)
-            let samples_per_ms = (self.config.sample_rate().0 as f32 / 1000.0) * (channels as f32);
+            let samples_per_ms = (sample_rate as f32 / 1000.0) * (channels as f32);
             let read_f = samples_read as f32;
-            state.position_ms += (read_f / samples_per_ms) as i64;
+            *position_ms += (read_f / samples_per_ms) as i64;
 
             if samples_read < data.len() {
                 data[samples_read..].fill(0.0);
             }
 
-            if decoder.is_finished() {
-                state.playing = false;
+            if d.is_finished() {
+                *playing = false;
             }
         } else {
             data.fill(0.0);
@@ -203,4 +217,3 @@ impl Player {
 // cpal::Stream is not Send on some Android backends, but we manage it safely
 unsafe impl Send for Player {}
 unsafe impl Sync for Player {}
-
