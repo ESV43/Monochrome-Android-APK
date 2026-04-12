@@ -90,6 +90,15 @@ sed -i 's|<span>Monochrome</span>|<span>Monochrome Music</span>|' index.html 2>/
 
 echo "  ✓ Source patched with Android-specific UI and features."
 
+# 3d. Verify syntax of patched JS files
+echo "▶ Verifying JS syntax..."
+for f in js/app.js js/settings.js js/music-api.js js/storage.js js/android-service.js; do
+    if [ -f "$f" ]; then
+        node -c "$f" || { echo "  ✗ Syntax error in $f"; exit 1; }
+    fi
+done
+echo "  ✓ JS syntax verified."
+
 # ── 5. Init Capacitor Android if needed ──
 if [ ! -d "$PROJECT_DIR/android/app" ]; then
     npx cap add android 2>/dev/null
@@ -99,7 +108,11 @@ fi
 # ── 6. Build web ──
 echo ""
 echo "▶ Building web app..."
-npx vite build 2>&1 | tail -3
+npx vite build 2>&1
+if [ $? -ne 0 ]; then
+    echo "  ✗ Vite build failed! Check logs above for details."
+    exit 1
+fi
 echo "  ✓ Web build complete."
 
 # ── 7. Sync to Android ──
