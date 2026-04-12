@@ -6,8 +6,8 @@ set -euo pipefail
 # Pulls latest from GitHub, applies Android patches, builds APK
 #
 # Patches applied temporarily during build:
-#   - index.html: script tag, viewport-fit, brand name
-#   - js/android-service.js: foreground service + notch CSS
+#   - index.html: script tag, viewport-fit, brand name, YTM UI
+#   - js/*.js: YTM API and provider integration
 #   - package.json: Capacitor dependencies
 # All reverted after build. Git stays clean.
 # ─────────────────────────────────────────────────────────
@@ -16,9 +16,10 @@ PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APK_OUTPUT="$PROJECT_DIR/android/app/build/outputs/apk/debug/app-debug.apk"
 APK_COPY="$PROJECT_DIR/Monochrome-debug.apk"
 
-export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
-export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
-export ANDROID_SDK_ROOT=$ANDROID_HOME
+# These are usually set in the environment, but provided here as fallbacks for Mac
+export JAVA_HOME=${JAVA_HOME:-/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home}
+export ANDROID_HOME=${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}
+export ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-$ANDROID_HOME}
 export PATH=$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
 cd "$PROJECT_DIR"
@@ -26,8 +27,8 @@ cd "$PROJECT_DIR"
 cleanup() {
     echo ""
     echo "▶ Cleaning up patched files..."
-    git checkout -- index.html package.json package-lock.json 2>/dev/null || true
-    rm -f js/android-service.js
+    git checkout -- index.html package.json package-lock.json js/app.js js/settings.js js/music-api.js js/storage.js 2>/dev/null || true
+    rm -f js/android-service.js js/ytm-api.js
     echo "  ✓ Source restored to upstream."
 }
 trap cleanup EXIT
@@ -63,23 +64,34 @@ echo "  ✓ Done."
 echo ""
 echo "▶ Patching for Android build..."
 
-# 3a. Add script tag
-sed -i '' 's|</body>|<script type="module" src="./js/android-service.js"></script></body>|' index.html
+# 3a. Copy overlay files from storage
+OVERLAY_STORAGE="$PROJECT_DIR/android/overlay"
 
-# 3b. Add viewport-fit=cover + disable pinch zoom
-sed -i '' 's|initial-scale=1.0"|initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"|' index.html
-
-# 3c. Brand: "Monochrome" → "Monochrome Music" in sidebar logo
-sed -i '' 's|<span>Monochrome</span>|<span>Monochrome Music</span>|' index.html
-
-echo "  ✓ index.html patched (script tag + viewport-fit + brand)."
-
-# ── 4. Copy android-service.js from android/ storage ──
+# Copy android-service.js (main bridge)
 cp "$PROJECT_DIR/android/android-service.js" js/android-service.js
-echo "  ✓ android-service.js copied."
+
+# Copy specialized JS files (YTM integration, etc.)
+if [ -d "$OVERLAY_STORAGE/js" ]; then
+    cp "$OVERLAY_STORAGE/js/"*.js js/
+fi
+
+# Replace index.html with modified version if available
+if [ -f "$OVERLAY_STORAGE/index.html.modified" ]; then
+    cp "$OVERLAY_STORAGE/index.html.modified" index.html
+fi
+
+# 3b. Add viewport-fit=cover if not already present
+if ! grep -q "viewport-fit=cover" index.html; then
+    sed -i 's|initial-scale=1.0"|initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"|' index.html
+fi
+
+# 3c. Brand: "Monochrome" → "Monochrome Music" in sidebar logo if not already present
+sed -i 's|<span>Monochrome</span>|<span>Monochrome Music</span>|' index.html 2>/dev/null || true
+
+echo "  ✓ Source patched with Android-specific UI and features."
 
 # ── 5. Init Capacitor Android if needed ──
-if [ ! -d "$PROJECT_DIR/android" ]; then
+if [ ! -d "$PROJECT_DIR/android/app" ]; then
     npx cap add android 2>/dev/null
     echo "  ✓ Android platform added."
 fi
@@ -97,7 +109,6 @@ npx cap sync android 2>&1 | tail -2
 echo "  ✓ Synced."
 
 # ── 7b. Fix duplicate splash resources ──
-# Upstream ships splash.png, Capacitor sync generates splash.xml — Gradle fails on duplicates
 if [ -f "$PROJECT_DIR/android/app/src/main/res/drawable/splash.png" ] && \
    [ -f "$PROJECT_DIR/android/app/src/main/res/drawable/splash.xml" ]; then
     rm "$PROJECT_DIR/android/app/src/main/res/drawable/splash.png"

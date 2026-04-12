@@ -4,6 +4,7 @@ Android wrapper for [Monochrome](https://github.com/monochrome-music/monochrome)
 
 ## Features
 
+- **YouTube Music integration** — Connect account and import playlists directly
 - **Background playback** — Foreground Service keeps audio playing when the screen is off
 - **Media controls** — Play/pause/skip in the notification shade, lock screen, and Bluetooth
 - **Battery optimization bypass** — Requests exclusion from Android's battery killer on first launch

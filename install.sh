@@ -31,9 +31,20 @@ cp "$SCRIPT_DIR/build-android.sh" "$TARGET/"
 cp "$SCRIPT_DIR/capacitor.config.ts" "$TARGET/"
 chmod +x "$TARGET/build-android.sh"
 
+# Create a storage directory for overlay files to be used during build
+OVERLAY_STORAGE="$TARGET/android/overlay"
+mkdir -p "$OVERLAY_STORAGE/js"
+
 # Copy android-service.js
-mkdir -p "$TARGET/android"
-cp "$SCRIPT_DIR/android/android-service.js" "$TARGET/android/"
+cp "$SCRIPT_DIR/android/android-service.js" "$TARGET/android/android-service.js"
+
+# Copy modified JS files to storage
+cp "$SCRIPT_DIR/js/"*.js "$OVERLAY_STORAGE/js/"
+
+# Copy modified index.html to storage
+if [ -f "$SCRIPT_DIR/index.html.modified" ]; then
+    cp "$SCRIPT_DIR/index.html.modified" "$OVERLAY_STORAGE/index.html.modified"
+fi
 
 # Copy Java sources
 JAVA_DEST="$TARGET/android/app/src/main/java/com/monochrome/app"
