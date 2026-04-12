@@ -183,18 +183,24 @@ impl Player {
             }
 
             // Update position (approximate)
-            let samples_per_ms = (self.config.sample_rate().0 as f32 / 1000.0) * channels as f32;
-            state.position_ms += (samples_read as f32 / samples_per_ms) as i64;
+            let samples_per_ms = (self.config.sample_rate().0 as f32 / 1000.0) * (channels as f32);
+            let read_f = samples_read as f32;
+            state.position_ms += (read_f / samples_per_ms) as i64;
 
             if samples_read < data.len() {
                 data[samples_read..].fill(0.0);
-                if decoder.is_finished() {
-                    state.playing = false;
-                }
+            }
+
+            if decoder.is_finished() {
+                state.playing = false;
             }
         } else {
             data.fill(0.0);
         }
     }
 }
+
+// cpal::Stream is not Send on some Android backends, but we manage it safely
+unsafe impl Send for Player {}
+unsafe impl Sync for Player {}
 
