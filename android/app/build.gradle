@@ -32,7 +32,12 @@ android {
     // Rust Build Integration
     tasks.register("buildRust", Exec) {
         workingDir = file("src/main/rust")
-        commandLine = ["cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86_64", "build", "--release"]
+        def ndkDir = System.getenv("ANDROID_NDK_HOME") ?: System.getenv("ANDROID_NDK_ROOT")
+        if (ndkDir) {
+            commandLine = ["cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86_64", "--ndk", ndkDir, "build", "--release"]
+        } else {
+            commandLine = ["cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86_64", "build", "--release"]
+        }
     }
 
     preBuild.dependsOn(buildRust)
