@@ -15,7 +15,7 @@ Android wrapper for [Monochrome](https://github.com/monochrome-music/monochrome)
 - **Full UI** — Navigation bar visible, status bar visible with safe area padding
 - **Back navigation** — Back button in header for album/artist/playlist navigation
 - **Automation** — Built-in GitHub Actions for automatic APK generation
-
+- **Native Like Playback**-Gives Native playback experinece
 ## Quick Start (Automatic)
 
 The easiest way to get the APK is via GitHub Actions:
