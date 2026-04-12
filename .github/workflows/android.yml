@@ -130,11 +130,13 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         with:
           files: upstream/Monochrome-debug.apk
-          tag_name: nightly # Using a specific 'nightly' tag
-          name: "Latest Build (Nightly)"
+          tag_name: nightly  # Changed to 'nightly' to avoid confusion with 'latest' system tags
+          name: Nightly Build
           body: |
-            Auto-generated nightly build.
-            Built on: ${{ github.event.head_commit.timestamp }}
-            Commit: ${{ github.sha }}
+            This is an automated build of the latest commit.
+            **Commit:** ${{ github.sha }}
           prerelease: true
-          make_latest: true # Ensures this is marked as the latest release
+          make_latest: true
+          # This is the key: it allows the action to update the existing tag/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
