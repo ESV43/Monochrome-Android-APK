@@ -1,4 +1,4 @@
-# Monochrome Android App
+# Monochrome Android App (MonoTune)
 
 Android wrapper for [Monochrome](https://github.com/monochrome-music/monochrome), a privacy-respecting music streaming application.
 
