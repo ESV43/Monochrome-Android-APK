@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.monochrome.app',
-  appName: 'Fabiodalez Music',
+  appName: 'Monochrome Music',
   webDir: 'dist',
   android: {
     adjustMarginsForEdgeToEdge: 'auto',

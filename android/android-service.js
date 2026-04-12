@@ -364,7 +364,7 @@ if (window.AndroidLocalFiles) {
         const coverEl = document.querySelector('.now-playing-bar .track-info img.cover');
         const audio = document.getElementById('audio-player');
         return {
-            title: titleEl?.textContent?.trim() || 'Fabiodalez Music',
+            title: titleEl?.textContent?.trim() || 'Monochrome Music',
             artist: artistEl?.textContent?.trim() || 'Music',
             cover: coverEl?.src || null,
             position: Math.floor((audio?.currentTime || 0) * 1000),
@@ -382,7 +382,7 @@ if (window.AndroidLocalFiles) {
 
     // Start with placeholder
     AudioService.start({
-        title: 'Fabiodalez Music', text: 'Select a song', cover: null,
+        title: 'Monochrome Music', text: 'Select a song', cover: null,
         playing: false, position: 0, duration: 0,
     }).catch(() => {});
 

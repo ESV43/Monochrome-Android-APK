@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ─────────────────────────────────────────────────────────
-# Fabiodalez Music — Android overlay installer
+# Monochrome Music — Android overlay installer
 # Copies Android-specific files into a Monochrome clone
 # ─────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ if [ ! -f "$TARGET/index.html" ] || [ ! -f "$TARGET/package.json" ]; then
     exit 1
 fi
 
-echo "Installing Fabiodalez Music Android overlay into: $TARGET"
+echo "Installing Monochrome Music Android overlay into: $TARGET"
 
 # Copy build script and config
 cp "$SCRIPT_DIR/build-android.sh" "$TARGET/"

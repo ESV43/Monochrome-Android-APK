@@ -110,7 +110,7 @@ public class MainActivity extends BridgeActivity {
                 request.setTitle(filename);
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                 request.setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_DOWNLOADS, "FabiodalezMusic/" + filename);
+                        Environment.DIRECTORY_DOWNLOADS, "MonochromeMusic/" + filename);
                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 dm.enqueue(request);
                 Toast.makeText(this, "Downloading: " + filename, Toast.LENGTH_SHORT).show();
@@ -129,7 +129,7 @@ public class MainActivity extends BridgeActivity {
                 values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
                 values.put(MediaStore.Downloads.MIME_TYPE, mimeType);
                 values.put(MediaStore.Downloads.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOWNLOADS + "/FabiodalezMusic");
+                        Environment.DIRECTORY_DOWNLOADS + "/MonochromeMusic");
                 Uri uri = getContentResolver().insert(
                         MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
                 if (uri != null) {
@@ -143,7 +143,7 @@ public class MainActivity extends BridgeActivity {
                 // Older Android — direct file write
                 java.io.File dir = new java.io.File(
                         Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS), "FabiodalezMusic");
+                                Environment.DIRECTORY_DOWNLOADS), "MonochromeMusic");
                 dir.mkdirs();
                 java.io.File file = new java.io.File(dir, filename);
                 java.io.FileOutputStream fos = new java.io.FileOutputStream(file);
