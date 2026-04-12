@@ -1,5 +1,32 @@
 // ── ANDROID BRIDGES (synchronous, run immediately) ──
 
+// ── YTM LOGIN HANDLER ──
+window._onYTMLoginSuccess = function(cookies) {
+    try {
+        // Extract authuser if present, default to 0
+        const authUserMatch = cookies.match(/x-goog-authuser=(\d+)/);
+        const authUser = authUserMatch ? authUserMatch[1] : '0';
+        
+        // Save to storage via a custom event or direct call if available
+        // For now, we'll use a custom event that the settings page can listen to
+        window.dispatchEvent(new CustomEvent('ytm-login-success', { 
+            detail: { cookie: cookies, authUser } 
+        }));
+        
+        console.log('YTM Login successful');
+    } catch (e) {
+        console.error('Failed to process YTM cookies', e);
+    }
+};
+
+window.startYTMLogin = function() {
+    if (window.YTMBridge) {
+        window.YTMBridge.startLogin();
+    } else {
+        console.error('YTMBridge not available');
+    }
+};
+
 // ── CLIPBOARD FALLBACK ──
 if (window.AndroidBridge) {
     const origClipboard = navigator.clipboard?.writeText?.bind(navigator.clipboard);

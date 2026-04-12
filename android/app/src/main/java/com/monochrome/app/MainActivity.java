@@ -46,6 +46,10 @@ public class MainActivity extends BridgeActivity {
         getBridge().getWebView().addJavascriptInterface(
                 new AndroidBridge(this), "AndroidBridge");
 
+        // Register YTM bridge
+        getBridge().getWebView().addJavascriptInterface(
+                new YTMBridge(this, getBridge().getWebView()), "YTMBridge");
+
         // Initialize Native Audio Engine
         try {
             NativeAudio.init();
