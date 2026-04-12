@@ -40,6 +40,11 @@ JAVA_DEST="$TARGET/android/app/src/main/java/com/monochrome/app"
 mkdir -p "$JAVA_DEST"
 cp "$SCRIPT_DIR/android/app/src/main/java/com/monochrome/app/"*.java "$JAVA_DEST/"
 
+# Copy Rust source
+RUST_DEST="$TARGET/android/app/src/main/rust"
+mkdir -p "$RUST_DEST"
+cp -r "$SCRIPT_DIR/android/app/src/main/rust/"* "$RUST_DEST/"
+
 # Copy AndroidManifest
 mkdir -p "$TARGET/android/app/src/main"
 cp "$SCRIPT_DIR/android/app/src/main/AndroidManifest.xml" "$TARGET/android/app/src/main/"

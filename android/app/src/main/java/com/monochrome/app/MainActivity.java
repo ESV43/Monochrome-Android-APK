@@ -46,6 +46,13 @@ public class MainActivity extends BridgeActivity {
         getBridge().getWebView().addJavascriptInterface(
                 new AndroidBridge(this), "AndroidBridge");
 
+        // Initialize Native Audio Engine
+        try {
+            NativeAudio.init();
+        } catch (UnsatisfiedLinkError e) {
+            // Native library might not be built yet
+        }
+
         // Handle blob: and data: downloads from the WebView
         setupDownloadHandler();
 

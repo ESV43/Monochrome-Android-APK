@@ -58,14 +58,22 @@ public class AudioServicePlugin extends Plugin {
         String title = call.getString("title", "Monochrome Music");
         String text = call.getString("text", "Playing music");
         String cover = call.getString("cover", null);
+        String audioUrl = call.getString("audioUrl", null);
         Boolean playing = call.getBoolean("playing", true);
         long position = call.getData().optLong("position", 0L);
         long duration = call.getData().optLong("duration", 0L);
+
+        // Update Native EQ if provided
+        JSObject eqData = call.getObject("eq");
+        if (eqData != null) {
+            // ... (optional: sync EQ from start)
+        }
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.putExtra("title", title);
         intent.putExtra("text", text);
         intent.putExtra("cover", cover);
+        intent.putExtra("audioUrl", audioUrl);
         intent.putExtra("playing", playing);
         intent.putExtra("position", position);
         intent.putExtra("duration", duration);
@@ -77,6 +85,34 @@ public class AudioServicePlugin extends Plugin {
         }
 
         call.resolve();
+    }
+
+    @PluginMethod
+    public void setEq(PluginCall call) {
+        try {
+            com.getcapacitor.JSArray gainsArray = call.getArray("gains");
+            if (gainsArray != null) {
+                float[] gains = new float[gainsArray.length()];
+                for (int i = 0; i < gainsArray.length(); i++) {
+                    gains[i] = (float) gainsArray.getDouble(i);
+                }
+                NativeAudio.setEqGains(gains);
+            }
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void setSpeed(PluginCall call) {
+        float speed = call.getFloat("speed", 1.0f);
+        try {
+            NativeAudio.setSpeed(speed);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage());
+        }
     }
 
     @PluginMethod

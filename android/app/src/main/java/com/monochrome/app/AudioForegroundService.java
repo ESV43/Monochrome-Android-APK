@@ -81,9 +81,11 @@ public class AudioForegroundService extends Service {
             String action = intent.getAction();
             if (ACTION_PLAY.equals(action)) {
                 isPlaying = true;
+                try { NativeAudio.resume(); } catch (UnsatisfiedLinkError e) {}
                 sendCommandToWebView("play");
             } else if (ACTION_PAUSE.equals(action)) {
                 isPlaying = false;
+                try { NativeAudio.pause(); } catch (UnsatisfiedLinkError e) {}
                 sendCommandToWebView("pause");
             } else if (ACTION_NEXT.equals(action)) {
                 sendCommandToWebView("next");
@@ -93,9 +95,17 @@ public class AudioForegroundService extends Service {
                 String title = intent.getStringExtra("title");
                 String artist = intent.getStringExtra("text");
                 String coverUrl = intent.getStringExtra("cover");
+                String audioUrl = intent.getStringExtra("audioUrl");
                 isPlaying = intent.getBooleanExtra("playing", true);
                 currentPosition = intent.getLongExtra("position", 0);
                 currentDuration = intent.getLongExtra("duration", 0);
+                
+                if (audioUrl != null && !audioUrl.isEmpty()) {
+                    try {
+                        NativeAudio.play(audioUrl);
+                    } catch (UnsatisfiedLinkError e) {}
+                }
+
                 if (title != null) currentTitle = title;
                 if (artist != null) currentArtist = artist;
 

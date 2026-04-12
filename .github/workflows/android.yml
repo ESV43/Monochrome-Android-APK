@@ -41,7 +41,22 @@ jobs:
           
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        
+
+      - name: Install Android NDK
+        run: |
+          sdkmanager "ndk;27.0.12077973" # Update version as needed
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.0.12077973" >> $GITHUB_ENV
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-linux-android
+          override: true
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
       - name: Clone Upstream Monochrome
         run: |
           git clone https://github.com/monochrome-music/monochrome.git upstream

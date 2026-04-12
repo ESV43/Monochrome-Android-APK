@@ -22,6 +22,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ["src/main/jniLibs", "src/main/rust/target/ndk"]
+        }
+    }
+
+    // Rust Build Integration
+    tasks.register("buildRust", Exec) {
+        workingDir = file("src/main/rust")
+        commandLine = ["cargo", "ndk", "-t", "arm64-v8a", "-t", "armeabi-v7a", "-t", "x86_64", "build", "--release"]
+    }
+
+    preBuild.dependsOn(buildRust)
 }
 
 repositories {

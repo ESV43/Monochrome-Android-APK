@@ -367,6 +367,7 @@ if (window.AndroidLocalFiles) {
             title: titleEl?.textContent?.trim() || 'Monochrome Music',
             artist: artistEl?.textContent?.trim() || 'Music',
             cover: coverEl?.src || null,
+            audioUrl: audio?.src || null,
             position: Math.floor((audio?.currentTime || 0) * 1000),
             duration: Math.floor((audio?.duration || 0) * 1000),
         };
@@ -374,10 +375,18 @@ if (window.AndroidLocalFiles) {
 
     function sendUpdate(playing) {
         const info = getTrackInfo();
-        AudioService.start({
+        const payload = {
             title: info.title, text: info.artist, cover: info.cover,
+            audioUrl: info.audioUrl,
             playing, position: info.position, duration: info.duration,
-        }).catch(() => {});
+        };
+        
+        // Include EQ settings if available
+        if (window.audioContextManager?.geqGains) {
+            payload.eq = { gains: window.audioContextManager.geqGains };
+        }
+        
+        AudioService.start(payload).catch(() => {});
     }
 
     // Start with placeholder
@@ -396,6 +405,13 @@ if (window.AndroidLocalFiles) {
         lastUpdate = now;
         sendUpdate(true);
     });
+
+    // EQ Syncing
+    setInterval(() => {
+        if (window.audioContextManager?.isGraphicEQEnabled) {
+            AudioService.setEq({ gains: window.audioContextManager.geqGains }).catch(() => {});
+        }
+    }, 5000);
 
     const titleObserver = new MutationObserver(() => {
         if (document.title && document.title.includes('\u2022')) {

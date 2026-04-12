@@ -72,6 +72,17 @@ The Android-specific code lives entirely in:
 - `capacitor.config.ts` — Capacitor configuration
 - `build-android.sh` — Build automation
 
+## Native Audio Engine (Experimental)
+
+This version includes a native Rust audio engine for higher quality and better background performance.
+
+### Build Requirements
+
+1. **Rust** — `rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android`
+2. **Cargo-NDK** — `cargo install cargo-ndk`
+3. **Android NDK** — Ensure `ANDROID_NDK_HOME` is set.
+4. **FFmpeg for Android** — The Rust engine links against native FFmpeg libraries.
+
 ## Architecture
 
 ```
@@ -82,17 +93,24 @@ Monochrome (upstream web app)
     ├── android-service.js (injected at build time)
     │   ├── Download handler (monkey-patches <a download>)
     │   ├── Media controls (MutationObserver on document.title)
+    │   ├── Native Audio redirection (sends URLs and EQ to Rust)
     │   ├── CSS injection (safe areas, layout fixes)
     │   ├── Back button (history.pushState hook)
     │   ├── Clipboard override (AndroidBridge)
     │   └── OAuth override (window.open → Chrome Custom Tab)
     │
-    └── Native Java
-        ├── AudioForegroundService (MediaSession + notification)
-        ├── AudioServicePlugin (Capacitor bridge)
-        ├── DownloadBridge (MediaStore file saving)
-        ├── LocalFilesBridge (Android folder picker)
-        └── AndroidBridge (clipboard, browser)
+    ├── Native Java
+    │   ├── AudioForegroundService (MediaSession + Native Audio control)
+    │   ├── AudioServicePlugin (Capacitor bridge)
+    │   ├── NativeAudio (JNI wrapper for Rust)
+    │   ├── DownloadBridge (MediaStore file saving)
+    │   ├── LocalFilesBridge (Android folder picker)
+    │   └── AndroidBridge (clipboard, browser)
+    │
+    └── Native Rust (Audio Engine)
+        ├── CPAL (Audio Output)
+        ├── FFmpeg (Decoding & Filtering)
+        └── DSP (EQ & Volume)
 ```
 
 ## License
